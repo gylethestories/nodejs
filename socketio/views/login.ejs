@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="/javascripts/axios.min.js"></script>
+    <script>
+      // Add a request interceptor
+      axios.interceptors.request.use(
+        function (config) {
+          return config;
+        },
+        function (error) {
+          return Promise.reject(error);
+        }
+      );
+
+      // Add a response interceptor
+      axios.interceptors.response.use(
+        function (response) {
+          const { authorization } = response.headers;
+          authorization && localStorage.setItem("token", authorization);
+          return response;
+        },
+        function (error) {
+          return Promise.reject(error);
+        }
+      );
+    </script>
+  </head>
+  <body>
+    <div>登录页面</div>
+    <div>
+      <div>用户名：<input id="username" /></div>
+      <div>密码：<input id="password" /></div>
+      <button id="login">登录</button>
+    </div>
+
+    <script>
+      var login = document.querySelector("#login");
+      var username = document.querySelector("#username");
+      var password = document.querySelector("#password");
+
+      login.onclick = () => {
+        axios
+          .post("/api/login", {
+            username: username.value,
+            password: password.value,
+          })
+          .then((res) => {
+            if (res.data.ok === 0) {
+              alert("用户名不正确");
+            } else {
+              localStorage.setItem("username", username.value);
+              window.location.href = "/chat";
+            }
+          });
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <hr />
+    <h1>mongodb的增删改查</h1>
+    <div>
+      <div>用户名：<input id="username" /></div>
+      <div>密码：<input id="password" /></div>
+      <div>年龄：<input id="age" /></div>
+      <button id="register">注册</button>
+      <button id="update">更新</button>
+      <button id="delete">删除</button>
+      <button id="exit">退出</button>
+    </div>
+    <hr />
+    <button id="queryList">查询</button>
+    <table border="1px">
+      <thead>
+        <tr>
+          <td>id</td>
+          <td>用户名</td>
+          <td>年龄</td>
+          <td>头像</td>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <script>
+      var register = document.querySelector("#register");
+      var exit = document.querySelector("#exit");
+      var update = document.querySelector("#update");
+      var odelete = document.querySelector("#delete");
+      var queryList = document.querySelector("#queryList");
+      var username = document.querySelector("#username");
+      var password = document.querySelector("#password");
+      var age = document.querySelector("#age");
+
+      register.onclick = () => {
+        fetch("api/user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username.value,
+            password: password.value,
+            age: age.value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+          });
+      };
+
+      update.onclick = () => {
+        fetch("api/user/62abdd834202fe189a6dce68", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "修改的名字",
+            password: "修改的密码",
+            age: 1,
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+          });
+      };
+
+      queryList.onclick = () => {
+        fetch("api/user/list")
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+            var tbody = document.querySelector("tbody");
+            tbody.innerHTML = res
+              .map(
+                (item) => `
+                <tr>
+                <td>${item._id}</td><td>${item.username}</td><td>${item.age}</td><td><img src="http://localhost:3000/public${item.avatar}" alt="" /></td>
+                </tr>`
+              )
+              .join("");
+          });
+      };
+
+      exit.onclick = () => {
+        fetch("api/logout")
+          .then((res) => json())
+          .then((res) => {
+            console.log(res);
+          });
+      };
+    </script>
+  </body>
+</html>
